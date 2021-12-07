@@ -4,17 +4,37 @@ let input = null;
 let editTasks = null;
 let inputResult = "";
 
-window.onload = init = () => {
+window.onload = init = async () => {
   input = document.getElementById("add-task");
   input.addEventListener("change", updateValue);
+  const resp = await fetch("http://localhost:8000/allTasks", {
+    metod: "GET",
+  });
+  let result = await resp.json();
+  allTasks = result.data;
   render();
 };
 
-const onClickButton = () => {
+const onClickButton = async () => {
   allTasks.push({
     text: valueInput,
     isCheck: false,
   });
+  const resp = await fetch("http://localhost:8000/createTask", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify({
+      text: valueInput,
+      isCheck: false,
+    }),
+  });
+  const result = await resp.json();
+  allTasks = result.data;
+  console.log(allTasks);
+  console.log("result", result);
 
   localStorage.setItem("tasks", JSON.stringify(allTasks));
   valueInput = "";
