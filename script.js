@@ -3,15 +3,10 @@ let valueInput = "";
 let input = null;
 let editTasks = null;
 let inputResult = "";
-const allTasksStorage = JSON.parse(sessionStorage.getItem("tasks"));
-// console.log(allTasksStorage);
 
-window.onload = function init() {
+window.onload = init = () => {
   input = document.getElementById("add-task");
   input.addEventListener("change", updateValue);
-  // localStorage.removeItem("tasks");
-  sessionStorage.removeItem("tasks");
-  // console.log(typeof allTasks);
   render();
 };
 
@@ -20,20 +15,17 @@ const onClickButton = () => {
     text: valueInput,
     isCheck: false,
   });
+
   localStorage.setItem("tasks", JSON.stringify(allTasks));
-  sessionStorage.setItem("tasks", JSON.stringify(allTasks));
   valueInput = "";
   input.value = "";
-  console.log(allTasks);
   render();
 };
 
 const onClickButtonRemove = () => {
-  allTasks.splice(0, allTasks.length);
+  allTasks = [];
   localStorage.setItem("tasks", JSON.stringify(allTasks));
-  sessionStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
-  console.log(allTasks);
 };
 
 const updateValue = (event) => {
@@ -52,6 +44,7 @@ const render = () => {
     const container = document.createElement("div");
     container.id = `task-${index}`;
     container.className = "task-container";
+
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = item.isCheck;
@@ -105,21 +98,19 @@ const render = () => {
 const onChangeCheckbox = (index) => {
   allTasks[index].isCheck = !allTasks[index].isCheck;
   localStorage.setItem("tasks", JSON.stringify(allTasks));
-  sessionStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
 };
 
 const removeTasks = (index) => {
   allTasks.splice(index, 1);
   localStorage.setItem("tasks", JSON.stringify(allTasks));
-  sessionStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
 };
+
 const editTasksFunction = (index) => {
   editTasks = index;
   inputResult = allTasks[index].text;
   localStorage.setItem("tasks", JSON.stringify(allTasks));
-  sessionStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
 };
 
@@ -128,7 +119,6 @@ const saveEditFunction = (index) => {
   editTasks = null;
   inputResult = "";
   localStorage.setItem("tasks", JSON.stringify(allTasks));
-  sessionStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
 };
 
@@ -136,6 +126,5 @@ const cancelEditFunction = () => {
   editTasks = null;
   inputResult = "";
   localStorage.setItem("tasks", JSON.stringify(allTasks));
-  sessionStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
 };
