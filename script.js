@@ -9,7 +9,7 @@ const allTasksStorage = JSON.parse(sessionStorage.getItem("tasks"));
 window.onload = function init() {
   input = document.getElementById("add-task");
   input.addEventListener("change", updateValue);
-  localStorage.removeItem("tasks");
+  // localStorage.removeItem("tasks");
   sessionStorage.removeItem("tasks");
   // console.log(typeof allTasks);
   render();
