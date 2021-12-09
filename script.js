@@ -1,31 +1,59 @@
-let allTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let allTasks = [];
 let valueInput = "";
 let input = null;
 let editTasks = null;
 let inputResult = "";
 
-window.onload = init = () => {
+window.onload = init = async () => {
   input = document.getElementById("add-task");
   input.addEventListener("change", updateValue);
+  const resp = await fetch("http://localhost:8000/allTasks", {
+    method: "GET",
+  });
+  const result = await resp.json();
+  allTasks = result.data;
   render();
 };
 
-const onClickButton = () => {
+const onClickButton = async () => {
   allTasks.push({
     text: valueInput,
     isCheck: false,
   });
+  const resp = await fetch("http://localhost:8000/createTask", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify({
+      text: valueInput,
+      isCheck: false,
+    }),
+  });
 
-  localStorage.setItem("tasks", JSON.stringify(allTasks));
+  const result = await resp.json();
+  allTasks = result.data;
+
   valueInput = "";
   input.value = "";
   render();
 };
 
-const onClickButtonRemove = () => {
-  allTasks = [];
-  localStorage.setItem("tasks", JSON.stringify(allTasks));
-  render();
+const onClickButtonRemove = async () => {
+  allTasks.forEach((item) => {
+    fetch(`http://localhost:8000/deleteTask?id=${item.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+      },
+    }).then(async (result) => {
+      result = await result.json();
+      allTasks = result.data;
+      render();
+    });
+  });
 };
 
 const updateValue = (event) => {
@@ -87,7 +115,7 @@ const render = () => {
 
       const imageDelete = document.createElement("img");
       imageDelete.src = "img/delete.svg";
-      imageDelete.onclick = () => removeTasks(index);
+      imageDelete.onclick = () => removeTasks(item, index);
       container.appendChild(imageDelete);
     }
 
@@ -97,34 +125,51 @@ const render = () => {
 
 const onChangeCheckbox = (index) => {
   allTasks[index].isCheck = !allTasks[index].isCheck;
-  localStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
 };
 
-const removeTasks = (index) => {
+const removeTasks = async (item, index) => {
   allTasks.splice(index, 1);
-  localStorage.setItem("tasks", JSON.stringify(allTasks));
+
+  const resp = await fetch(`http://localhost:8000/deleteTask?id=${item.id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+  const result = await resp.json();
+  allTasks = result.data;
   render();
 };
 
 const editTasksFunction = (index) => {
   editTasks = index;
   inputResult = allTasks[index].text;
-  localStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
 };
 
-const saveEditFunction = (index) => {
+const saveEditFunction = async (index) => {
   allTasks[index].text = inputResult;
   editTasks = null;
-  inputResult = "";
-  localStorage.setItem("tasks", JSON.stringify(allTasks));
+
+  const resp = await fetch("http://localhost:8000/updateTask", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json;charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify({
+      id: allTasks[index].id,
+      text: inputResult
+    }),
+  });
+
   render();
 };
 
 const cancelEditFunction = () => {
   editTasks = null;
   inputResult = "";
-  localStorage.setItem("tasks", JSON.stringify(allTasks));
   render();
 };
