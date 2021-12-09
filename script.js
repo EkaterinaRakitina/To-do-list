@@ -8,9 +8,9 @@ window.onload = init = async () => {
   input = document.getElementById("add-task");
   input.addEventListener("change", updateValue);
   const resp = await fetch("http://localhost:8000/allTasks", {
-    metod: "GET",
+    method: "GET",
   });
-  let result = await resp.json();
+  const result = await resp.json();
   allTasks = result.data;
   render();
 };
@@ -34,8 +34,6 @@ const onClickButton = async () => {
 
   const result = await resp.json();
   allTasks = result.data;
-  console.log(allTasks);
-  console.log("result", result);
 
   valueInput = "";
   input.value = "";
@@ -132,7 +130,6 @@ const onChangeCheckbox = (index) => {
 
 const removeTasks = async (item, index) => {
   allTasks.splice(index, 1);
-  console.log(item.id);
 
   const resp = await fetch(`http://localhost:8000/deleteTask?id=${item.id}`, {
     method: "DELETE",
@@ -141,7 +138,7 @@ const removeTasks = async (item, index) => {
       "Access-Control-Allow-Origin": "*",
     },
   });
-  let result = await resp.json();
+  const result = await resp.json();
   allTasks = result.data;
   render();
 };
@@ -155,7 +152,6 @@ const editTasksFunction = (index) => {
 const saveEditFunction = async (index) => {
   allTasks[index].text = inputResult;
   editTasks = null;
-  inputResult = "";
 
   const resp = await fetch("http://localhost:8000/updateTask", {
     method: "PATCH",
@@ -168,8 +164,7 @@ const saveEditFunction = async (index) => {
       text: inputResult
     }),
   });
-  let result = await resp.json();
-  inputResult = result;
+
   render();
 };
 
