@@ -165,6 +165,8 @@ const saveEditFunction = async (index) => {
     }),
   });
 
+  const result = await resp.json();
+  inputResult = result;
   render();
 };
 
