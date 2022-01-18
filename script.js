@@ -16,10 +16,7 @@ window.onload = init = async () => {
 };
 
 const onClickButton = async () => {
-  allTasks.push({
-    text: valueInput,
-    isCheck: false,
-  });
+  
   const resp = await fetch("http://localhost:8000/createTask", {
     method: "POST",
     headers: {
@@ -33,7 +30,7 @@ const onClickButton = async () => {
   });
 
   const result = await resp.json();
-  allTasks = result.data;
+  allTasks.push(result);
 
   valueInput = "";
   input.value = "";
@@ -49,8 +46,7 @@ const onClickButtonRemove = async () => {
         "Access-Control-Allow-Origin": "*",
       },
     }).then(async (result) => {
-      result = await result.json();
-      allTasks = result.data;
+      allTasks = result;
       render();
     });
   });
@@ -128,10 +124,8 @@ const onChangeCheckbox = (index) => {
   render();
 };
 
-const removeTasks = async (item, index) => {
-  allTasks.splice(index, 1);
-
-  const resp = await fetch(`http://localhost:8000/deleteTask?id=${item.id}`, {
+const removeTasks = async (item) => {
+  const resp = await fetch(`http://localhost:8000/deleteTask?id=${item._id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -139,7 +133,7 @@ const removeTasks = async (item, index) => {
     },
   });
   const result = await resp.json();
-  allTasks = result.data;
+  allTasks = result;
   render();
 };
 
@@ -150,23 +144,19 @@ const editTasksFunction = (index) => {
 };
 
 const saveEditFunction = async (index) => {
-  allTasks[index].text = inputResult;
-  editTasks = null;
-
-  const resp = await fetch("http://localhost:8000/updateTask", {
+  const resp = await fetch(`http://localhost:8000/updateTask?id=${allTasks[editTasks]._id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
       "Access-Control-Allow-Origin": "*",
     },
     body: JSON.stringify({
-      id: allTasks[index].id,
       text: inputResult
     }),
   });
-
+  editTasks = null;
   const result = await resp.json();
-  inputResult = result;
+  allTasks = result.data;
   render();
 };
 
